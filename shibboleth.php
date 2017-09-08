@@ -1,6 +1,6 @@
 <?php
 /*
- Plugin Name: Shibboleth
+ Plugin Name: WUSTL Key Authentication
  Plugin URI: http://wordpress.org/extend/plugins/shibboleth
  Description: Easily externalize user authentication to a <a href="http://shibboleth.internet2.edu">Shibboleth</a> Service Provider
  Author: Will Norris, mitcho (Michael 芳貴 Erlewine), Michael McNeill
@@ -515,7 +515,7 @@ add_filter( 'shibboleth_user_nicename', 'sanitize_title' );
 function shibboleth_login_form() {
 	$login_url = add_query_arg('action', 'shibboleth');
 	$login_url = remove_query_arg('reauth', $login_url);
-	echo '<p id="shibboleth_login"><a href="' . esc_url($login_url) . '">' . __('Login with Shibboleth', 'shibboleth') . '</a></p>';
+	echo '<p id="shibboleth_login"><a href="' . esc_url($login_url) . '">' . __('Login with WUSTL Key', 'shibboleth') . '</a></p>';
 }
 add_action('login_form', 'shibboleth_login_form');
 
