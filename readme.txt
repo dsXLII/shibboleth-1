@@ -1,9 +1,10 @@
 === Shibboleth ===
-Contributors: michaelryanmcneill, willnorris, mitchoyoshitaka
+Contributors: michaelryanmcneill, willnorris, mitchoyoshitaka, jrchamp, dericcrago, bshelton229, Alhrath, dandalpiaz
 Tags: shibboleth, authentication, login, saml
-Requires at least: 3.3
-Tested up to: 4.8.1
-Stable tag: 1.8.1
+Requires at least: 4.0
+Tested up to: 5.5
+Requires PHP: 5.6
+Stable tag: 2.3
 
 Allows WordPress to externalize user authentication and account creation to a Shibboleth Service Provider.
 
@@ -82,6 +83,97 @@ Before extending the plugin in this manner, please ensure that it is not actuall
 [write a new plugin]: http://codex.wordpress.org/Writing_a_Plugin
 [support forum]: http://wordpress.org/tags/shibboleth?forum_id=10#postform
 
+= Can I control the plugin settings with constants in wp-config.php? =
+
+Yes, the plugin allows for all settings to be controlled via constants in `wp-config.php`. If set, the constant will override the value that exists in the WordPress options table. The available constants are detailed (with their available options) below:
+
+ - `SHIBBOLETH_ATTRIBUTE_ACCESS_METHOD`
+   - Format: string
+   - Available options: `'standard'` for the default "Environment Variables" option, `'redirect'` for the "Redirected Environment Variables" option, and `'http'` for the "HTTP Headers" option.
+   - Example: `define('SHIBBOLETH_ATTRIBUTE_ACCESS_METHOD', 'standard');`
+ - `SHIBBOLETH_ATTRIBUTE_ACCESS_METHOD_FALLBACK`
+   - Format: boolean
+   - Available options: `true` to fallback to the standard "Environment Variables" options when the selected attribute access method does not return results or `false` to not fallback.
+   - Example: `define('SHIBBOLETH_ATTRIBUTE_ACCESS_METHOD_FALLBACK', true);`
+ - `SHIBBOLETH_LOGIN_URL`
+   - Format: string
+   - Available Options: none
+   - Example: `define('SHIBBOLETH_LOGIN_URL', 'https://example.com/Shibboleth.sso/Login');`
+ - `SHIBBOLETH_LOGOUT_URL`
+   - Format: string
+   - Available Options: none
+   - Example: `define('SHIBBOLETH_LOGOUT_URL', 'https://example.com/Shibboleth.sso/Logout');`
+ - `SHIBBOLETH_PASSWORD_CHANGE_URL`
+   - Format: string
+   - Available options: none
+   - Example: `define('SHIBBOLETH_PASSWORD_CHANGE_URL', 'https://sso.example.com/account/update');`
+ - `SHIBBOLETH_PASSWORD_RESET_URL`
+   - Format: string
+   - Available options: none
+   - Example: `define('SHIBBOLETH_PASSWORD_RESET_URL', 'https://sso.example.com/account/reset');`
+ - `SHIBBOLETH_SPOOF_KEY`
+   - Format: string
+   - Available options: none
+   - Example: `define('SHIBBOLETH_SPOOF_KEY', 'abcdefghijklmnopqrstuvwxyz');`
+ - `SHIBBOLETH_DEFAULT_TO_SHIB_LOGIN`
+   - Format: boolean
+   - Available options: `true` to automatically default to Shibboleth login or `false` to not default to Shibboleth login.
+   - Example: `define('SHIBBOLETH_DEFAULT_TO_SHIB_LOGIN', true);`
+ - `SHIBBOLETH_AUTO_LOGIN`
+   - Format: boolean
+   - Available options: `true` to automatically login users with an existing Shibboleth session or `false` to not check for an existing Shibboleth session.
+   - Example: `define('SHIBBOLETH_AUTO_LOGIN', true);`
+ - `SHIBBOLETH_BUTTON_TEXT`
+   - Format: string
+   - Available options: none
+   - Example: `define('SHIBBOLETH_BUTTON_TEXT', 'Login with Shibboleth');`
+ - `SHIBBOLETH_DISABLE_LOCAL_AUTH`
+   - Format: boolean
+   - Available options: `true` to prevent users logging in using WordPress local authentication or `false` allow WordPress local authentication AND Shibboleth authentication.
+   - Example: `define('SHIBBOLETH_DISABLE_LOCAL_AUTH', true);`
+ - `SHIBBOLETH_HEADERS`
+   - Format: array (>= PHP 5.6) OR serialized string (< PHP 5.6)
+   - Available options: none
+   - PHP 5.5 (and earlier) example: `define( 'SHIBBOLETH_HEADERS', serialize( array( 'username' => array( 'name' => 'eppn' ), 'first_name' => array( 'name' => 'givenName', 'managed' => 'on' ), 'last_name' => array( 'name' => 'sn', 'managed' => 'on' ), 'nickname' => array( 'name' => 'eppn', 'managed' => 'off' ), 'display_name' => array( 'name' => 'displayName', 'managed' => 'off' ), 'email' => array( 'name' => 'mail', 'managed' => 'on' ) ) ) );`
+   - PHP 5.6 (and above) example: `const SHIBBOLETH_HEADERS = array( 'username' => array( 'name' => 'eppn' ), 'first_name' => array( 'name' => 'givenName', 'managed' => 'on' ), 'last_name' => array( 'name' => 'sn', 'managed' => 'on' ), 'nickname' => array( 'name' => 'eppn', 'managed' => 'off' ), 'display_name' => array( 'name' => 'displayName', 'managed' => 'off' ), 'email' => array( 'name' => 'mail', 'managed' => 'on' ) );`
+   - PHP 7.0 (and above) example: `define('SHIBBOLETH_HEADERS', array( 'username' => array( 'name' => 'eppn' ), 'first_name' => array( 'name' => 'givenName', 'managed' => 'on' ), 'last_name' => array( 'name' => 'sn', 'managed' => 'on' ), 'nickname' => array( 'name' => 'eppn', 'managed' => 'off' ), 'display_name' => array( 'name' => 'displayName', 'managed' => 'off' ), 'email' => array( 'name' => 'mail', 'managed' => 'on' ) ) );`
+ - `SHIBBOLETH_CREATE_ACCOUNTS`
+   - Format: boolean
+   - Available options: `true` to automatically create new users if they do not exist in the WordPress database or `false` to only allow existing users to authenticate.
+   - Example: `define('SHIBBOLETH_CREATE_ACCOUNTS', true);`
+ - `SHIBBOLETH_AUTO_COMBINE_ACCOUNTS`
+   - Format: string
+   - Available options: `'disallow'` for the default "Prevent Automatic Account Merging" option, `'allow'` for the "Allow Automatic Account Merging" option, and `'bypass'` for the "Allow Automatic Account Merging (Bypass Username Management)" option.
+   - Example: `define('SHIBBOLETH_AUTO_COMBINE_ACCOUNTS', 'disallow');`
+ - `SHIBBOLETH_MANUALLY_COMBINE_ACCOUNTS`
+   - Format: string
+   - Available options: `'disallow'` for the default "Prevent Manual Account Merging" option, `'allow'` for the "Allow Manual Account Merging" option, and `'bypass'` for the "Allow Manual Account Merging (Bypass Username Management)" option.
+   - Example: `define('SHIBBOLETH_MANUALLY_COMBINE_ACCOUNTS', 'disallow');`
+ - `SHIBBOLETH_ROLES`
+   - Format: array (>= PHP 5.6) OR serialized string (< PHP 5.6)
+   - Available options: none
+   - PHP 5.5 (and earlier) example: `define( 'SHIBBOLETH_ROLES', serialize( array( 'administrator' => array( 'header' => 'entitlement', 'value' => 'urn:mace:example.edu:entitlement:wordpress:admin' ), 'author' => array( 'header' => 'affiliation', 'value' => 'faculty' ) ) ) );`
+   - PHP 5.6 (and above) example: `const SHIBBOLETH_ROLES = array( 'administrator' => array( 'header' => 'entitlement', 'value' => 'urn:mace:example.edu:entitlement:wordpress:admin' ), 'author' => array( 'header' => 'affiliation', 'value' => 'faculty' ) );`
+   - PHP 7.0 (and above) example: `define('SHIBBOLETH_ROLES', array( 'administrator' => array( 'header' => 'entitlement', 'value' => 'urn:mace:example.edu:entitlement:wordpress:admin' ), 'author' => array( 'header' => 'affiliation', 'value' => 'faculty' ) ) );`
+ - `SHIBBOLETH_DEFAULT_ROLE`
+   - Format: string
+   - Available options: All available WordPress roles. The defaults are `'administrator'`, `'subscriber'`, `'author'`, `'editor'`, and `'contributor'`. Leave this constant empty `''` to make the default no allowed access.
+   - Example: `define('SHIBBOLETH_DEFAULT_ROLE', 'subscriber');`
+ - `SHIBBOLETH_UPDATE_ROLES`
+   - Format: boolean
+   - Available options: `true` to automatically use Shibboleth data to update user role mappings each time the user logs in or `false` to only update role mappings when a user is initally created.
+   - Example: `define('SHIBBOLETH_UPDATE_ROLES', true);`
+ - `SHIBBOLETH_LOGGING`
+   - Format: array (>= PHP 5.6) OR serialized string (< PHP 5.6)
+   - Available options: account_merge, account_create, auth, role_update
+   - PHP 5.5 (and earlier) example: `define( 'SHIBBOLETH_LOGGING', serialize( array( 'account_merge', 'account_create', 'auth', 'role_update' ) ) );`
+   - PHP 5.6 (and above) example: `const SHIBBOLETH_LOGGING = array( 'account_merge', 'account_create', 'auth', 'role_update' );`
+   - PHP 7.0 (and above) example: `define('SHIBBOLETH_LOGGING', array( 'account_merge', 'account_create', 'auth', 'role_update' ) );`
+ - `SHIBBOLETH_DISALLOW_FILE_MODS`
+   - Format: boolean
+   - Available options: `true` to disable the Shibboleth plugin from attempting to add `.htaccess` directives or `false` to allow the Shibboleth plugin to add the necessary `.htaccess` directives.
+   - Example: `define('SHIBBOLETH_DISALLOW_FILE_MODS', true);`
+
 == Screenshots ==
 
 1. Configure login, logout, and password management URLs
@@ -89,13 +181,78 @@ Before extending the plugin in this manner, please ensure that it is not actuall
 3. Assign users into WordPress roles based on arbitrary data provided by Shibboleth
 
 == Upgrade Notice ==
-This update brings with it numerous changes, including support for PHP 7.x. Please see the changelog for additional details.
+= 2.3 =
+This update increases the minimum PHP version to 5.6 and the minimum WordPress version to 4.0. The plugin will fail to activate if you are running below those minimum versions. 
+
+= 2.2.2 =
+This update re-implements a previously reverted <IfModule> conditional for three aliases of the Shibboleth Apache module: `mod_shib`, `mod_shib.c`, and `mod_shib.cpp`. If you run into issues related to this change, please open an issue on [GitHub](https://github.com/michaelryanmcneill/shibboleth/issues).
+
+= 2.0.2 =
+This update brings with it a major change to the way Shibboleth attributes are accessed from versions less than 2.0. For most users, no additional configuration will be necessary. If you are using a specialized server configuration, such as a Shibboleth Service Provider on a reverse proxy or a server configuration that results in environment variables being sent with the prefix REDIRECT_, you should see the changelog for additional details: https://wordpress.org/plugins/shibboleth/#developers
+
+= 2.0.1 =
+This update brings with it a major change to the way Shibboleth attributes are accessed from versions less than 2.0. For most users, no additional configuration will be necessary. If you are using a specialized server configuration, such as a Shibboleth Service Provider on a reverse proxy or a server configuration that results in environment variables being sent with the prefix REDIRECT_, you should see the changelog for additional details: https://wordpress.org/plugins/shibboleth/#developers
+
+= 2.0 =
+This update brings with it a major change to the way Shibboleth attributes are accessed. For most users, no additional configuration will be necessary. If you are using a specialized server configuration, such as a Shibboleth Service Provider on a reverse proxy or a server configuration that results in environment variables being sent with the prefix REDIRECT_, you should see the changelog for additional details: https://wordpress.org/plugins/shibboleth/#developers
 
 == Changelog ==
+= version 2.3 (2020-08-17) =
+ - Implementing a fallback option for the "Shibboleth Attribute Access Method". For example, if your web server returns redirected environment variables, but occasionally returns standard environment variables, you would want to enable this option. 
+ - Removing deprecated `create_function()` from use. 
+ - Bumped minimum PHP and WordPress versions to 5.6 and 4.0 respectively. 
+ - Greatly improved the handling of managed fields and cleaned up `options-user.php`.  
+
+= version 2.2.2 (2020-06-22) =
+ - Re-implementing <IfModule> conditional for .htaccess to protect against the Shibboleth Apache module not being installed; [thanks to @jrchamp for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/60). This change includes conditionals for `mod_shib`, `mod_shib.c`, and `mod_shib.cpp`. If you run into issues related to this change, please open an issue on [GitHub](https://github.com/michaelryanmcneill/shibboleth/issues).
+
+= version 2.2.1 (2020-06-18) =
+ - Temporarily reverts <IfModule> conditional for .htaccess due to [reported issues with cPanel environments](https://github.com/michaelryanmcneill/shibboleth/issues/64).
+
+= version 2.2 (2020-06-17) =
+ - Implementing <IfModule> conditional for .htaccess to protect against the Shibboleth Apache module not being installed; [thanks to @jrchamp for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/60).
+ - Added an option to disable account creation if no mapped roles or default roles exist; props [@dandalpiaz](https://github.com/michaelryanmcneill/shibboleth/pull/59).
+ - Improve the Shibboleth login link so that when it shows up on a normal request it will correctly still be a login link and will redirect back to the page that showed the login link; props [@Alhrath](https://github.com/michaelryanmcneill/shibboleth/pull/53).
+
+= version 2.1.1 (2018-05-16) =
+ - Minor code cleanup for disabling authentication and passsword resets; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/commit/06c28bec6d42e92a9338961e2f7ed4a7ae8a0f71#commitcomment-29005081).
+ - Resolved a minor problem where setting the SHIBBOLETH_LOGGING constant on PHP 5.5 or below would not work in the administrative interface; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/pull/47#discussion_r188758184).
+ - Resolved an issue with the default to shibboleth login option in the admin; [thanks to @trandrew for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/48).
+
+= version 2.1 (2018-05-16) =
+ - Resolved an issue where in multisite users could inadvertently be sent to an unrelated subsite after logging in; [thanks to @themantimeforgot for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/33) and [props to @jrchamp for the fix](https://github.com/michaelryanmcneill/shibboleth/pull/35).
+ - Resolved an regression that prevented users from authenticating if shibboleth_default_role is blank and shibboleth_create_accounts is enabled; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/pull/37).
+ - Cleaned up the shibboleth_authenticate_user function; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/pull/38).
+ - Allowed translate.wordpress.org compatibility; [thanks to @eric-gagnon for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/41) and [props to @jrchamp for the fix](https://github.com/michaelryanmcneill/shibboleth/pull/42).
+ - Resolved a conflict that caused the lost password and reset password forms to break; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/pull/44).
+ - Resolves an issue where the password reset URL wasn't being properly displayed on wp-login.php; [thanks to @earnjam for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/28).
+ - Prevents local password resets if local authentication is disabled; [thanks to @earnjam for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/28).
+ - Prevents local password changes if local authentication is disabled; [thanks to @earnjam for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/28).
+ - Standardized the way we check if options are set as constants to prevent duplicate code.
+ - For manual account merges, ensure that email comparisons are case insensitive; [thanks to @mrbrown8 for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/39).
+ - Introduces available logging for various actions the plugin takes.
+
+= version 2.0.2 (2018-01-17) =
+ - Resolved an issue that caused manual linking of accounts to fail if user's didn't have an existing Shibboleth session. 
+
+= version 2.0.1 (2018-01-17) =
+ - Resolved a regression that prevented accounts from being created if they matched a group; [thanks to @Androclese for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/22).
+ - Resolved an issue where assets were not being properly included in the WordPress.org packaged plugin. 
+
+= version 2.0 (2018-01-16) =
+ - Changed the way we check for Shibboleth attributes. Now, by default, we only check standard environment variables for Shibboleth attributes. For most users, no additional configuration will be necessary. If you are using a specialized server configuration, such as a Shibboleth Service Provider on a reverse proxy or a server configuration that results in environment variables being sent with the prefix REDIRECT_, you should instead select the option specific to your server configuration. Selecting the "Redirected Environment Variables" option will look for attributes in environment variables prefixed with `REDIRECT_` while selecting the "HTTP Headers" option will look for attributes in environment variables (populated by HTTP Headers) prefixed with `HTTP_`. Most users should be fine leaving the default option selected; [thanks to @jrchamp for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/8).
+ - Changed the default behavior to not automatically update user roles.
+ - Allow options to be defined via constants. Documentation has been added to the ["FAQ" section of the WordPress.org plugins page](https://wordpress.org/plugins/shibboleth/#can-i-control-the-plugin-settings-with-constants-in-wpconfigphp).
+ - Allow automatic and manual merging of local WordPress accounts with Shibboleth accounts. This prevents a collision from occurring if the Shibboleth email attribute matches an email that already exists in the `wp_users` table. This is configurable by an administrator.
+ - Changed the options page to utilize a more modern design centered around tabs.
+ - Added signifcant customizations to the login page to bring it more in-line with WordPress.com Single Sign On.
+ - Disabled the sending of an email notifying user's that their email had changed when the Shibboleth plugin updates user attributes to prevent user confusion; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/pull/19).
+ - Removed the `shibboleth-mu.php` file as it is no longer relevant.
+
 = version 1.8.1 (2017-09-08) =
  - Use sanitize_title rather than sanitize_user to sanitize user_nicename; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/pull/4).
  - Changed activation and deactivation hooks to use `__FILE__`; props [@jrchamp](https://github.com/michaelryanmcneill/shibboleth/pull/5).
- - Reverted to using `$_SERVER` in `shibboleth_getenv()` to handle use cases where `getenv()` doesn't return data; [thanks to @jmdemuth for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/7). 
+ - Reverted to using `$_SERVER` in `shibboleth_getenv()` to handle use cases where `getenv()` doesn't return data; [thanks to @jmdemuth for reporting](https://github.com/michaelryanmcneill/shibboleth/issues/7).
 
 = version 1.8 (2017-08-23) =
 The Shibboleth plugin is now being maintained by [michaelryanmcneill](https://profiles.wordpress.org/michaelryanmcneill). Contributions are welcome on [GitHub](https://github.com/michaelryanmcneill/shibboleth)!
