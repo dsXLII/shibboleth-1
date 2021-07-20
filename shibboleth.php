@@ -529,6 +529,9 @@ function shibboleth_session_initiator_url( $redirect = null ) {
  * Known users will have their profile data updated based on the Shibboleth
  * data present if the plugin is configured to do so.
  *
+ * @uses apply_filters() Calls 'shibboleth_override_username' before authenticating
+ * @uses apply_filters() Calls 'shibboleth_override_email' before authenticating
+ *
  * @return WP_User|WP_Error authenticated user or error if unable to authenticate
  * @since 1.0
  */
@@ -549,7 +552,7 @@ function shibboleth_authenticate_user() {
 	 * @param  string $username
 	 */
 	$username = apply_filters( 'shibboleth_override_username', $username );
-	
+
 	/**
 	 * Override the email address provided by Shibboleth.
 	 *
