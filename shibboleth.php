@@ -542,6 +542,24 @@ function shibboleth_authenticate_user() {
 	$email = shibboleth_getenv( $shib_headers['email']['name'] );
 
 	/**
+	 * Override the username provided by Shibboleth.
+	 *
+	 * This can be used to escape or normalize the Shibboleth username.
+	 *
+	 * @param  string $username
+	 */
+	$username = apply_filters( 'shibboleth_override_username', $username );
+	
+	/**
+	 * Override the email address provided by Shibboleth.
+	 *
+	 * This can be used to escape or normalize the Shibboleth email address.
+	 *
+	 * @param  string $email
+	 */
+	$email = apply_filters( 'shibboleth_override_email', $email );
+
+	/**
 	 * Allows a bypass mechanism for native Shibboleth authentication.
 	 *
 	 * Returning a non-null value from this filter will result in your value being
